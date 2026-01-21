@@ -9,7 +9,6 @@
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-require_once(DOKU_PLUGIN.'admin.php');
 define('CACHEREVISIONSERASER_VER','1.6.6');
 define('CACHEREVISIONSERASER_CONFIGREVISION',2);
 define('CACHEREVISIONSERASER_DATE','2010-11-22');
