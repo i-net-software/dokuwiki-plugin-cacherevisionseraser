@@ -54,7 +54,7 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 	* Return prompt for admin menu
 	*/
 	function getMenuText($language) {
-		return $this->lang['menu'] . ' (v' . CACHEREVISIONSERASER_VER . ')';
+		return (isset($this->lang['menu']) ? $this->lang['menu'] : 'Cache/Revisions Eraser') . ' (v' . CACHEREVISIONSERASER_VER . ')';
 	}
 
 	/**
@@ -73,14 +73,14 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 		$this->cachedir = $conf['cachedir'];
 		$this->revisdir = $conf['olddir'];
 		$this->pagesdir = $conf['datadir'];
-		if ($this->pagesdir == $null) $this->pagesdir = $conf['savedir']; // Olders versions compability?
-		$this->metadir = $conf['metadir'];
-		if ($this->metadir == $null) $this->metadir = $conf['meta'];      // Olders versions compability?
-		$this->locksdir = $conf['lockdir'];
-		if ($this->locksdir == $null) $this->locksdir = $this->pagesdir;  // Olders versions compability?
+		if ($this->pagesdir == null) $this->pagesdir = isset($conf['savedir']) ? $conf['savedir'] : null; // Olders versions compability?
+		$this->metadir = isset($conf['metadir']) ? $conf['metadir'] : null;
+		if ($this->metadir == null) $this->metadir = isset($conf['meta']) ? $conf['meta'] : null;      // Olders versions compability?
+		$this->locksdir = isset($conf['lockdir']) ? $conf['lockdir'] : null;
+		if ($this->locksdir == null) $this->locksdir = $this->pagesdir;  // Olders versions compability?
 		$this->lang_id = $conf['lang'];
 		if (!($this->configs['confrevision'] > 0)) $this->configs['confrevision'] = 0;
-		$this->locktime = $conf['locktime'];
+		$this->locktime = isset($conf['locktime']) ? $conf['locktime'] : 0;
 	}
 
 	/**
@@ -117,18 +117,18 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 		$cmd = $this->get_req('cmd', 'main');
 
 		// Plug-in title
-		ptln('<h1>'.$this->lang['title'].' '.$this->lang['version'].' '.CACHEREVISIONSERASER_VER.'</h1>');
+		ptln('<h1>'.(isset($this->lang['title']) ? $this->lang['title'] : 'Cache/Revisions Eraser').' '.(isset($this->lang['version']) ? $this->lang['version'] : 'Version').' '.CACHEREVISIONSERASER_VER.'</h1>');
 
 		// Make sure outputinfo level is valid
 		$theoutputinfo = intval($this->get_req('level_outputinfo', 0));
-		if ($this->configs['allow_outputinfo']) {
+		if (isset($this->configs['allow_outputinfo']) && $this->configs['allow_outputinfo']) {
 			if (($theoutputinfo < 0) || ($theoutputinfo > 2)) $theoutputinfo = 0;
 		} else {
-			$theoutputinfo = intval($this->configs['level_outputinfo']);
+			$theoutputinfo = intval(isset($this->configs['level_outputinfo']) ? $this->configs['level_outputinfo'] : 0);
 		}
 
 		// Debugging only
-		if ($this->configs['debuglist']) {
+		if (isset($this->configs['debuglist']) && $this->configs['debuglist']) {
 			ptln('<table class="inline">');
 			ptln('<tr><th class="centeralign"><strong>Debugging information</strong></th></tr>');
 			ptln('<tr><th>');
@@ -301,7 +301,7 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 			}
 			ptln('</th></tr></table>');
 		}
-		ptln('<br /><a href="http://wiki.splitbrain.org/plugin:cacherevisionseraser" class="urlextern" target="_blank">'.$this->lang['searchyounewversionurl'].'</a> [English only]<br />');
+		ptln('<br /><a href="http://wiki.splitbrain.org/plugin:cacherevisionseraser" class="urlextern" target="_blank">'.(isset($this->lang['searchyounewversionurl']) ? $this->lang['searchyounewversionurl'] : 'Search for new version').'</a> [English only]<br />');
 	}
 
 	/**
@@ -497,8 +497,8 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 		global $ID;
 
 		$analizysucessy = true;
-		if ($this->configs['confrevision'] == 0) {
-			ptln('<strong>'.$this->lang['analyze_confmissingfailed'].' (ERR: 1)</strong><br />');
+		if (isset($this->configs['confrevision']) && $this->configs['confrevision'] == 0) {
+			ptln('<strong>'.(isset($this->lang['analyze_confmissingfailed']) ? $this->lang['analyze_confmissingfailed'] : 'Configuration missing or failed').' (ERR: 1)</strong><br />');
 			$analizysucessy = false;
 		}
 		if (($this->configs['confrevision'] != CACHEREVISIONSERASER_CONFIGREVISION) && ($analizysucessy)) {
@@ -525,75 +525,75 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 				ptln('<input type="hidden" name="cmd" value="createconf" />');
 				ptln('<table width="100%" class="inline"><tr>');
 				ptln('<th width="100">&nbsp;</th>');
-				ptln('<th width="120"><strong>'.$this->lang['wordb_option'].'</strong></th>');
-				ptln('<th><strong>'.$this->lang['wordb_optiondesc'].'</strong></th></tr><tr>');
+				ptln('<th width="120"><strong>'.(isset($this->lang['wordb_option']) ? $this->lang['wordb_option'] : 'Option').'</strong></th>');
+				ptln('<th><strong>'.(isset($this->lang['wordb_optiondesc']) ? $this->lang['wordb_optiondesc'] : 'Description').'</strong></th></tr><tr>');
 				ptln('<td />');
 				ptln('<td><input type="text" name="menusort" value="67" maxlength="2" size="2" /></td>');
-				ptln('<td>'.$this->lang['cfgdesc_menusort'].'</td>');
+				ptln('<td>'.(isset($this->lang['cfgdesc_menusort']) ? $this->lang['cfgdesc_menusort'] : 'Menu sort order').'</td>');
 				ptln('</tr><tr><th />');
-				ptln('<th><strong>'.$this->lang['wordb_enable'].'</strong></th>');
-				ptln('<th><strong>'.$this->lang['wordb_optiondesc'].'</strong></th>');
+				ptln('<th><strong>'.(isset($this->lang['wordb_enable']) ? $this->lang['wordb_enable'] : 'Enable').'</strong></th>');
+				ptln('<th><strong>'.(isset($this->lang['wordb_optiondesc']) ? $this->lang['wordb_optiondesc'] : 'Description').'</strong></th>');
 				ptln('</tr><tr><td />');
 				ptln('<td><input type="checkbox" name="allow_allcachedel_E" value="yes" checked="checked" /></td>');
-				ptln('<td>'.$this->lang['delxcacheclass'].'</td>');
+				ptln('<td>'.(isset($this->lang['delxcacheclass']) ? $this->lang['delxcacheclass'] : 'Delete cache class').'</td>');
 				ptln('</tr><tr><td />');
 				ptln('<td><input type="checkbox" name="allow_allrevisdel_E" value="yes" checked="checked" /></td>');
-				ptln('<td>'.$this->lang['delxrevisclass'].'</td>');
+				ptln('<td>'.(isset($this->lang['delxrevisclass']) ? $this->lang['delxrevisclass'] : 'Delete revisions class').'</td>');
 				ptln('</tr><tr><td />');
 				ptln('<td><input type="checkbox" name="allow_debug_E" value="yes" /></td>');
-				ptln('<td>'.$this->lang['delxdebugmode'].'</td>');
+				ptln('<td>'.(isset($this->lang['delxdebugmode']) ? $this->lang['delxdebugmode'] : 'Debug mode').'</td>');
 				ptln('</tr><tr>');
-				ptln('<th><strong>'.$this->lang['wordb_allowuserchag'].'</strong></th>');
-				ptln('<th><strong>'.$this->lang['wordb_checkedasdef'].'</strong></th>');
-				ptln('<th><strong>'.$this->lang['wordb_optiondesc'].'</strong></th>');
+				ptln('<th><strong>'.(isset($this->lang['wordb_allowuserchag']) ? $this->lang['wordb_allowuserchag'] : 'Allow user change').'</strong></th>');
+				ptln('<th><strong>'.(isset($this->lang['wordb_checkedasdef']) ? $this->lang['wordb_checkedasdef'] : 'Checked as default').'</strong></th>');
+				ptln('<th><strong>'.(isset($this->lang['wordb_optiondesc']) ? $this->lang['wordb_optiondesc'] : 'Description').'</strong></th>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="delext_i_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="delext_i_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['extdesc_i'] . '</td>');
+				ptln('<td>' . (isset($this->lang['extdesc_i']) ? $this->lang['extdesc_i'] : 'Extension .i') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="delext_xhtml_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="delext_xhtml_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['extdesc_xhtml'] . '</td>');
+				ptln('<td>' . (isset($this->lang['extdesc_xhtml']) ? $this->lang['extdesc_xhtml'] : 'Extension .xhtml') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="delext_js_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="delext_js_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['extdesc_js'] . '</td>');
+				ptln('<td>' . (isset($this->lang['extdesc_js']) ? $this->lang['extdesc_js'] : 'Extension .js') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="delext_css_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="delext_css_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['extdesc_css'] . '</td>');
+				ptln('<td>' . (isset($this->lang['extdesc_css']) ? $this->lang['extdesc_css'] : 'Extension .css') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="delext_mediaP_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="delext_mediaP_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['extdesc_mediaP'] . '</td>');
+				ptln('<td>' . (isset($this->lang['extdesc_mediaP']) ? $this->lang['extdesc_mediaP'] : 'Extension mediaP') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="delext_UNK_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="delext_UNK_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['extdesc_UNK'] . '</td>');
+				ptln('<td>' . (isset($this->lang['extdesc_UNK']) ? $this->lang['extdesc_UNK'] : 'Extension UNK') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="del_oldlock_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="del_oldlock_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['deloldlockdesc'] . '</td>');
+				ptln('<td>' . (isset($this->lang['deloldlockdesc']) ? $this->lang['deloldlockdesc'] : 'Delete old locks') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="del_indexing_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="del_indexing_C" value="yes" /></td>');
-				ptln('<td>' . $this->lang['delindexingdesc'] . '</td>');
+				ptln('<td>' . (isset($this->lang['delindexingdesc']) ? $this->lang['delindexingdesc'] : 'Delete indexing') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="del_meta_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="del_meta_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['delmetadesc'] . '</td>');
+				ptln('<td>' . (isset($this->lang['delmetadesc']) ? $this->lang['delmetadesc'] : 'Delete meta files') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="del_revis_A" value="yes" checked="checked" /></td>');
 				ptln('<td><input type="checkbox" name="del_revis_C" value="yes" checked="checked" /></td>');
-				ptln('<td>' . $this->lang['delrevisdesc'] . '</td>');
+				ptln('<td>' . (isset($this->lang['delrevisdesc']) ? $this->lang['delrevisdesc'] : 'Delete revisions') . '</td>');
 				ptln('</tr><tr>');
 				ptln('<td><input type="checkbox" name="allow_outputinfo" value="yes" checked="checked" /></td>');
-				ptln('<td><input type="radio" name="level_outputinfo" value="0" />'.$this->lang['outputinfo_lvl0'].'<br />');
-				ptln('<input type="radio" name="level_outputinfo" value="1" />'.$this->lang['outputinfo_lvl1'].'<br />');
-				ptln('<input type="radio" name="level_outputinfo" value="2" checked="checked" />'.$this->lang['outputinfo_lvl2']);
-				ptln('</td><td>'.$this->lang['delxverbose'].'</td>');
+				ptln('<td><input type="radio" name="level_outputinfo" value="0" />'.(isset($this->lang['outputinfo_lvl0']) ? $this->lang['outputinfo_lvl0'] : 'Level 0').'<br />');
+				ptln('<input type="radio" name="level_outputinfo" value="1" />'.(isset($this->lang['outputinfo_lvl1']) ? $this->lang['outputinfo_lvl1'] : 'Level 1').'<br />');
+				ptln('<input type="radio" name="level_outputinfo" value="2" checked="checked" />'.(isset($this->lang['outputinfo_lvl2']) ? $this->lang['outputinfo_lvl2'] : 'Level 2'));
+				ptln('</td><td>'.(isset($this->lang['delxverbose']) ? $this->lang['delxverbose'] : 'Verbose').'</td>');
 				ptln('</tr><tr><th /><th />');
-				ptln('<th><input type="submit" class="button" value="'.$this->lang['createconfbtn'].'" /></th>');
+				ptln('<th><input type="submit" class="button" value="'.(isset($this->lang['createconfbtn']) ? $this->lang['createconfbtn'] : 'Create Config').'" /></th>');
 				ptln('</tr></table></div></form>');
 			}
 		}
@@ -618,7 +618,7 @@ class admin_plugin_cacherevisionserase extends DokuWiki_Admin_Plugin {
 			$analizysucessy = false;
 		}
 		if ($analizysucessy == false) {
-			ptln('<br /><strong>'.$this->lang['analyze_checkreadme'].'</strong><br />');
+			ptln('<br /><strong>'.(isset($this->lang['analyze_checkreadme']) ? $this->lang['analyze_checkreadme'] : 'Please check README').'</strong><br />');
 		}
 		return $analizysucessy;
 	}
