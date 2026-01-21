@@ -1,7 +1,7 @@
 base   cacherevisionserase
 author JustBurn
 email  justburn@sapo.pt
-date   2010-11-22
+date   2026-01-21
 name   Cache and Revisions Eraser
 desc   Erase entire cache and/or old wiki revisions
 url    https://www.dokuwiki.org/plugin:cacherevisionseraser
